@@ -19,8 +19,22 @@ $lieu = htmlspecialchars($_POST["Lieu"]);
 $telephone = htmlspecialchars($_POST["Telephone"]);
 $email = htmlspecialchars($_POST["Email"]);
 
+error_log("nom: $nom");
+error_log("postnom: $postnom");
+error_log("prenom: $prenom");
+error_log("sexe: $sexe");
+error_log("org_privee: $org");
+error_log("nom_organisation: $nom_organisation");
+error_log("Formation: $formation");
+error_log("paiement: $paiement");
+error_log("Date_debut: $datedebut");
+error_log("Date_fin: $datefin");
+error_log("Lieu: $lieu");
+error_log("Telephone: $telephone");
+error_log("Email: $email");
+
 // Requête SQL pour insérer les données dans la table 'users' 
-$sql = "INSERT INTO users (nom, postnom, prenom, sexe, org_privee, nom_organisation, Formation, paiement, Date_debut, Date_fin, Lieu, Telephone, Email ) 
+$sql = "INSERT INTO user (nom, postnom, prenom, sexe, org_privee, nom_organisation, Formation, paiement, Date_debut, Date_fin, Lieu, Telephone, Email ) 
 VALUES ('$nom', '$postnom', '$prenom', '$sexe', '$org', '$nom_organisation', '$formation', '$paiement', '$datedebut', '$datefin', '$lieu', '$telephone', '$email')";
 
 if(mysqli_query($connect, $sql)){

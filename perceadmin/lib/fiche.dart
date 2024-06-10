@@ -43,7 +43,6 @@ class _FicheState extends State<Fiche> {
 
   //imprimer recu
   //
-  //
   Future<Uint8List> generatePdf() async {
     final pdf = pdfLib.Document();
 

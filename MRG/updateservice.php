@@ -10,22 +10,13 @@ include('conn.php');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Data received via POST method
     
- $nom = htmlspecialchars($_POST["nom"]);
-$postnom = htmlspecialchars($_POST["postnom"]);
-$prenom = htmlspecialchars($_POST["prenom"]);
-$sexe = htmlspecialchars($_POST["sexe"]);
-$org = htmlspecialchars($_POST["org_privee"]);
-$formation = htmlspecialchars($_POST["Formation"]);
-$paiement = htmlspecialchars($_POST["paiement"]);
-$datedebut = htmlspecialchars($_POST["Date_debut"]);
-$datefin = htmlspecialchars($_POST["Date_fin"]);
-$lieu = htmlspecialchars($_POST["Lieu"]);
-$telephone = htmlspecialchars($_POST["Telephone"]);
-$email = htmlspecialchars($_POST["Email"]);
-    $id = htmlspecialchars($_POST["id"]); // Assuming you're also passing the id
-    
+    $design = htmlspecialchars($_POST["designation"]);
+    $descr = htmlspecialchars($_POST["descriptions"]);
+    $detaille = htmlspecialchars($_POST["detaille"]);
+    $id = htmlspecialchars($_POST["id"]);
+
     // Requête SQL pour mettre à jour les données dans la table 'inscription'
-    $sql = "UPDATE user SET nom = '$nom', postnom ='$postnom', prenom='$prenom',sexe='$sexe',org_privee='$org',Formation='$formation',paiement='$paiement',Date_debut='$datedebut',Date_fin='$datefin',Lieu='$lieu',Telephone='$telephone',Email='$email'  WHERE id = '$id'";
+    $sql = "UPDATE services SET designation = '$design', descriptions ='$descr',detaille ='$detaille'  WHERE id = '$id'";
     
     // Exécution de la requête SQL
     if (mysqli_query($connect, $sql)) {

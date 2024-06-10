@@ -10,7 +10,7 @@ include('conn.php');
     $id = htmlspecialchars($_GET['id']);
 
     // Requête de suppression dans la table 'etudiants' où 'id' correspond à la valeur récupérée
-    $sql = "DELETE FROM user WHERE id = '" . $id . "'";
+    $sql = "DELETE FROM services WHERE id = '" . $id . "'";
     
     // Exécution de la requête de suppression
     if (mysqli_query($connect,$sql)) {
@@ -20,5 +20,6 @@ include('conn.php');
         // Affichage d'un message d'erreur en cas d'échec de la suppression
         echo "Erreur lors de la suppression : " . $connect->error;
     }
+
 
 ?>

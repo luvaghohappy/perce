@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'archive.dart';
 import 'fiche.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/pdf.dart';

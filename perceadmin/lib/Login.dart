@@ -53,91 +53,94 @@ class _LoginadminState extends State<Loginadmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 100),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Row(
-                children: const [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: AssetImage('assets/perce.png'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 10),
-                  ),
-                  Text(
-                    'FORMATION PERCE ADMIN',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 80),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 60),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: txtemail,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black12),
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Row(
+                  children: const [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/perce.png'),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
                     ),
-                    fillColor: Colors.white54,
-                    filled: true,
-                    prefixIcon: Icon(Icons.email),
-                    hintText: 'Email admin',
-                    labelText: 'Email'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: TextField(
-                controller: txtpassword,
-                decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black12),
+                    Text(
+                      'FORMATION PERCE ADMIN',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
-                    ),
-                    fillColor: Colors.white54,
-                    filled: true,
-                    prefixIcon: Icon(Icons.password_outlined),
-                    hintText: 'Votre password',
-                    labelText: 'Mot de passe'),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 30),
-            ),
-            GestureDetector(
-              onTap: login,
-              child: Container(
-                height: 50,
-                width: 250,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Connexion',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  ],
                 ),
               ),
-            )
-          ],
+              const Padding(
+                padding: EdgeInsets.only(top: 40),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  controller: txtemail,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      fillColor: Colors.white54,
+                      filled: true,
+                      prefixIcon: Icon(Icons.email),
+                      hintText: 'Email admin',
+                      labelText: 'Email'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: TextField(
+                  controller: txtpassword,
+                  decoration: const InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black12),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black),
+                      ),
+                      fillColor: Colors.white54,
+                      filled: true,
+                      prefixIcon: Icon(Icons.password_outlined),
+                      hintText: 'Votre password',
+                      labelText: 'Mot de passe'),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 50),
+              ),
+              GestureDetector(
+                onTap: login,
+                child: Container(
+                  height: 50,
+                  width: 250,
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Connexion',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

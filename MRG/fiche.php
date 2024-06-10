@@ -8,7 +8,7 @@ include('conn.php'); // Inclure la connexion à la base de données
 $studentid = $_GET['id'];
 
 // Requête SQL pour sélectionner toutes les colonnes de la table eleve pour un élève spécifique
-$sql = "SELECT * FROM users WHERE id = '$studentid'";
+$sql = "SELECT * FROM user WHERE id = '$studentid'";
 
 $result = mysqli_query($connect, $sql); // Exécuter la requête
 

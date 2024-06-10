@@ -3,21 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class Ajouteformation extends StatefulWidget {
-  const Ajouteformation({Key? key}) : super(key: key);
+class Services extends StatefulWidget {
+  const Services({super.key});
 
   @override
-  State<Ajouteformation> createState() => _AjouteformationState();
+  State<Services> createState() => _ServicesState();
 }
 
-class _AjouteformationState extends State<Ajouteformation> {
+class _ServicesState extends State<Services> {
   Future<void> _showEditDialog(Map<String, dynamic> item) async {
     txtdesign.text = item['designation'] ?? '';
     txtdescription.text = item['descriptions'] ?? '';
-    txtprixinscription.text = item['prix_inscription'] ?? '';
-    txtprixparti.text = item['prix_participation'] ?? '';
-    txtDate_debut.text = item['Date_debut'] ?? '';
-    txtDate_fin.text = item['Date_Fin'] ?? '';
+    txtdetaille.text = item['detaille'] ?? '';
 
     return showDialog<void>(
       context: context,
@@ -38,53 +35,8 @@ class _AjouteformationState extends State<Ajouteformation> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: TextField(
-                    controller: txtprixinscription,
-                    decoration:
-                        const InputDecoration(labelText: 'Prix inscription'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtprixparti,
-                    decoration: const InputDecoration(
-                        labelText: 'prix de participation'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtDate_debut,
-                    decoration: InputDecoration(
-                      labelText: 'Date debut',
-                      prefixIcon: IconButton(
-                        iconSize: 15,
-                        onPressed: () => _selectDate(txtDate_debut),
-                        icon: const Icon(Icons.calendar_today),
-                      ),
-                    ),
-                    readOnly: true,
-                    onTap: () {
-                      _selectDate(txtDate_debut);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtDate_fin,
-                    decoration: InputDecoration(
-                      labelText: 'Date Fin',
-                      prefixIcon: IconButton(
-                        iconSize: 15,
-                        onPressed: () => _selectDate(txtDate_fin),
-                        icon: const Icon(Icons.calendar_today),
-                      ),
-                    ),
-                    readOnly: true,
-                    onTap: () {
-                      _selectDate(txtDate_fin);
-                    },
+                    controller: txtdetaille,
+                    decoration: const InputDecoration(labelText: 'detaille'),
                   ),
                 ),
               ],
@@ -112,31 +64,22 @@ class _AjouteformationState extends State<Ajouteformation> {
   Future<void> updateData(String id) async {
     final designation = txtdesign.text;
     final description = txtdescription.text;
-    final prix_inscription = txtprixinscription.text;
-    final prix_participation = txtprixparti.text;
-    final Date_debut = txtDate_debut.text;
-    final Date_fin = txtDate_fin.text;
+    final detaille = txtdetaille.text;
 
     final response = await http.post(
-      Uri.parse("http://192.168.43.148:81/MRG/update.php"),
+      Uri.parse("http://192.168.43.148:81/MRG/updateservice.php"),
       body: {
         'id': id,
         'designation': designation,
         'descriptions': description,
-        'prix_inscription': prix_inscription,
-        'prix_participation': prix_participation,
-        'Date_debut': Date_debut,
-        'Date_Fin': Date_fin,
+        'detaille': detaille,
       },
     );
 
     if (response.statusCode == 200) {
       txtdesign.clear();
       txtdescription.clear();
-      txtprixinscription.clear();
-      txtprixparti.clear();
-      txtDate_debut.clear();
-      txtDate_fin.clear();
+      txtdetaille.clear();
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -161,47 +104,28 @@ class _AjouteformationState extends State<Ajouteformation> {
     fetchDesignationsAndDescriptions();
   }
 
-  Future<void> _selectDate(TextEditingController controller) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1980),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null) {
-      setState(() {
-        controller.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
-
   TextEditingController txtdesign = TextEditingController();
   TextEditingController txtdescription = TextEditingController();
-  TextEditingController txtprixinscription = TextEditingController();
-  TextEditingController txtprixparti = TextEditingController();
-  TextEditingController txtDate_debut = TextEditingController();
-  TextEditingController txtDate_fin = TextEditingController();
+  TextEditingController txtdetaille = TextEditingController();
 
   Future<void> insertData() async {
     final response = await http.post(
-      Uri.parse("http://192.168.43.148:81/MRG/insertformation.php"),
+      Uri.parse("http://192.168.43.148:81/MRG/insertservice.php"),
       body: {
         'designation': txtdesign.text,
         'descriptions': txtdescription.text,
-        'prix_inscription': txtprixinscription.text,
-        'prix_participation': txtprixparti.text,
-        'Date_debut': txtDate_debut.text,
-        'Date_Fin': txtDate_fin.text,
+        'detaille': txtdetaille.text,
       },
     );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
     if (response.statusCode == 200) {
       txtdesign.clear();
       txtdescription.clear();
-      txtprixinscription.clear();
-      txtprixparti.clear();
-      txtDate_debut.clear();
-      txtDate_fin.clear();
+      txtdetaille.clear();
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Enregistrement réussi'),
@@ -221,7 +145,7 @@ class _AjouteformationState extends State<Ajouteformation> {
   Future<void> fetchDesignationsAndDescriptions() async {
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.43.148:81/MRG/charger.php"),
+        Uri.parse("http://192.168.43.148:81/MRG/chargerservice.php"),
       );
       setState(() {
         items = List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -261,7 +185,7 @@ class _AjouteformationState extends State<Ajouteformation> {
     );
 
     if (confirmDelete == true) {
-      var url = 'http://192.168.43.148:81/MRG/deleteformation.php?id=$id';
+      var url = 'http://192.168.43.148:81/MRG/deleteservice.php?id=$id';
       var response = await http.post(Uri.parse(url));
 
       if (response.statusCode == 200) {
@@ -280,7 +204,7 @@ class _AjouteformationState extends State<Ajouteformation> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Ajouter formation'),
+          title: const Text('Ajouter Service'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -288,7 +212,7 @@ class _AjouteformationState extends State<Ajouteformation> {
                   padding: const EdgeInsets.all(10.0),
                   child: TextField(
                     controller: txtdesign,
-                    decoration: const InputDecoration(labelText: 'Formation'),
+                    decoration: const InputDecoration(labelText: 'designation'),
                   ),
                 ),
                 Padding(
@@ -307,53 +231,14 @@ class _AjouteformationState extends State<Ajouteformation> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: TextField(
-                    controller: txtprixinscription,
-                    decoration:
-                        const InputDecoration(labelText: 'Prix inscription'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtprixparti,
+                    controller: txtdetaille,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
                     decoration: const InputDecoration(
-                        labelText: 'prix de participation'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtDate_debut,
-                    decoration: InputDecoration(
-                      labelText: 'Date debut',
-                      prefixIcon: IconButton(
-                        iconSize: 15,
-                        onPressed: () => _selectDate(txtDate_debut),
-                        icon: const Icon(Icons.calendar_today),
-                      ),
+                      hintText: 'Detaille',
+                      labelText: 'Detaille',
+                      border: OutlineInputBorder(),
                     ),
-                    readOnly: true,
-                    onTap: () {
-                      _selectDate(txtDate_debut);
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtDate_fin,
-                    decoration: InputDecoration(
-                      labelText: 'Date Fin',
-                      prefixIcon: IconButton(
-                        iconSize: 15,
-                        onPressed: () => _selectDate(txtDate_fin),
-                        icon: const Icon(Icons.calendar_today),
-                      ),
-                    ),
-                    readOnly: true,
-                    onTap: () {
-                      _selectDate(txtDate_fin);
-                    },
                   ),
                 ),
               ],
@@ -391,12 +276,12 @@ class _AjouteformationState extends State<Ajouteformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         centerTitle: true,
-        title: const Text('NOS FORMATIONS'),
+        title: const Text('NOS SERVICES'),
       ),
       body: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start, // Correction : alignement à gauche
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Padding(
@@ -433,30 +318,7 @@ class _AjouteformationState extends State<Ajouteformation> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Date Début: ${item['Date_debut'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Date Fin: ${item['Date_Fin'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Prix Inscription: ${item['prix_inscription'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Prix Participation: ${item['prix_participation'] ?? 'N/A'}',
+                                    item['detaille'] ?? 'N/A',
                                     style: const TextStyle(
                                       color: Colors.grey,
                                     ),

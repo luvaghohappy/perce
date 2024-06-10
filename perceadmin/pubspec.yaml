@@ -39,6 +39,8 @@ dependencies:
   http: 
   pdf: 
   printing: 
+  charts_flutter:
+  fl_chart: ^0.62.0
 
 dev_dependencies:
   flutter_test:

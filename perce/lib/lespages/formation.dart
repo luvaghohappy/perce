@@ -81,8 +81,8 @@ class _FormationsState extends State<Formations> {
                         Row(
                           children: [
                             CircleAvatar(
-                              radius: 17,
-                              backgroundColor: Colors.blue,
+                              radius: 15,
+                              backgroundColor: Color.fromARGB(255, 11, 95, 163),
                               child: Text(
                                 item['designation'][0].toUpperCase(),
                                 style: const TextStyle(color: Colors.white),
@@ -140,21 +140,26 @@ class _FormationsState extends State<Formations> {
                         const SizedBox(
                           height: 10,
                         ),
-                        Container(
-                          height: 30,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Du ${item['Date_debut']} au ${item['Date_Fin']}',
-                              style: const TextStyle(
-                                color: Colors.grey,
-                                fontWeight: FontWeight.bold,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Du ${item['Date_debut'] ?? 'N/A'} au ${item['Date_Fin'] ?? 'N/A'}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
-                          ),
+                          ],
                         ),
                         const SizedBox(
                           height: 8,

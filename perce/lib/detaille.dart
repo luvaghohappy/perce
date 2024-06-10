@@ -16,7 +16,7 @@ class _DetailleState extends State<Detaille> {
     var item = widget.item;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 11, 101, 175),
         title: Text(item['designation'] ?? 'Détail'),
       ),
       body: Padding(

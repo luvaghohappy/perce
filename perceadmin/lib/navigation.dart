@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:perceadmin/archive.dart';
+import 'package:perceadmin/service.dart';
 import 'ajoute.dart';
+import 'firstpage.dart';
 import 'foramationUsers.dart';
 
 class NaviagtionPage extends StatefulWidget {
@@ -14,8 +16,10 @@ class _NaviagtionPageState extends State<NaviagtionPage> {
   @override
   int currentindex = 0;
   List<Widget> screen = [
+    const Myfirstpage(),
     const Users(),
     const Ajouteformation(),
+    const Services(),
     const Archives(),
   ];
   void _listbotton(int index) {
@@ -41,6 +45,13 @@ class _NaviagtionPageState extends State<NaviagtionPage> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(
+                (Icons.home),
+                size: 20,
+              ),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
                 (Icons.person),
                 size: 20,
               ),
@@ -52,6 +63,13 @@ class _NaviagtionPageState extends State<NaviagtionPage> {
                 size: 20,
               ),
               label: 'Formation',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(
+                (Icons.help_rounded),
+                size: 20,
+              ),
+              label: 'Services',
             ),
             BottomNavigationBarItem(
               icon: Icon(

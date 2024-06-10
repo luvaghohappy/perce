@@ -59,6 +59,8 @@ class _InscriptionState extends State<Inscription> {
   TextEditingController txtNomOrganisation = TextEditingController();
 
   String? selectedOption = 'Organisation';
+  String? selected;
+  String? selectedsexe;
 
   //insert data
   Future<void> insertData() async {
@@ -68,12 +70,12 @@ class _InscriptionState extends State<Inscription> {
         'nom': txtnom.text,
         'postnom': txtpostnom.text,
         'prenom': txtprenom.text,
-        'sexe': txtsexe.text,
+        'sexe': selectedsexe,
         'org_privee': selectedOption,
         'nom_organisation':
             selectedOption == 'Organisation' ? txtNomOrganisation.text : '',
         'Formation': txtFormation.text,
-        'paiement': txtpaiement.text,
+        'paiement': selected,
         'Date_debut': txtDate_debut.text,
         'Date_fin': txtDate_fin.text,
         'Lieu': txtLieu.text,
@@ -143,7 +145,7 @@ class _InscriptionState extends State<Inscription> {
               padding: EdgeInsets.only(top: 20),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 10),
+              padding: const EdgeInsets.only(left: 5),
               child: ListTile(
                 leading: const CircleAvatar(
                   radius: 20,
@@ -171,7 +173,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -188,7 +190,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -205,7 +207,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -215,19 +217,30 @@ class _InscriptionState extends State<Inscription> {
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: txtsexe,
+              child: DropdownButtonFormField<String>(
+                value: selectedsexe,
                 decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
-                    ),
-                    fillColor: Colors.white54,
-                    filled: true,
-                    hintText: 'Votre sexe',
-                    labelText: 'Sexe'),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  fillColor: Colors.white54,
+                  filled: true,
+                  labelText: 'Sexe',
+                ),
+                items: ['Feminin', 'Masculin']
+                    .map((label) => DropdownMenuItem(
+                          child: Text(label),
+                          value: label,
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedsexe = value;
+                  });
+                },
               ),
             ),
             Padding(
@@ -239,11 +252,11 @@ class _InscriptionState extends State<Inscription> {
                     borderSide: BorderSide(color: Colors.black12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white54),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   fillColor: Colors.white54,
                   filled: true,
-                  labelText: 'Organisation ou privée',
+                  labelText: 'Est vous une organisation ou privee',
                 ),
                 items: ['Organisation', 'Privée']
                     .map((label) => DropdownMenuItem(
@@ -268,7 +281,7 @@ class _InscriptionState extends State<Inscription> {
                         borderSide: BorderSide(color: Colors.black12),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white54),
+                        borderSide: BorderSide(color: Colors.black),
                       ),
                       fillColor: Colors.white54,
                       filled: true,
@@ -285,7 +298,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -295,19 +308,30 @@ class _InscriptionState extends State<Inscription> {
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: txtpaiement,
+              child: DropdownButtonFormField<String>(
+                value: selected,
                 decoration: const InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.black12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
-                    ),
-                    fillColor: Colors.white54,
-                    filled: true,
-                    hintText: 'paiement en avance ou solde',
-                    labelText: 'Avance ou Solde'),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black12),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  fillColor: Colors.white54,
+                  filled: true,
+                  labelText: 'Paiement',
+                ),
+                items: ['Solde', 'Avance']
+                    .map((label) => DropdownMenuItem(
+                          child: Text(label),
+                          value: label,
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selected = value;
+                  });
+                },
               ),
             ),
             Padding(
@@ -319,7 +343,7 @@ class _InscriptionState extends State<Inscription> {
                     borderSide: BorderSide(color: Colors.black12),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white54),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   fillColor: Colors.white54,
                   filled: true,
@@ -346,7 +370,7 @@ class _InscriptionState extends State<Inscription> {
                     borderSide: BorderSide(color: Colors.black12),
                   ),
                   focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white54),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                   fillColor: Colors.white54,
                   filled: true,
@@ -373,7 +397,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -390,7 +414,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
@@ -408,7 +432,7 @@ class _InscriptionState extends State<Inscription> {
                       borderSide: BorderSide(color: Colors.black12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.white54),
+                      borderSide: BorderSide(color: Colors.black),
                     ),
                     fillColor: Colors.white54,
                     filled: true,
