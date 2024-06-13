@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -11,6 +13,19 @@ class Ajouteformation extends StatefulWidget {
 }
 
 class _AjouteformationState extends State<Ajouteformation> {
+  File? _imageFile;
+
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
   Future<void> _showEditDialog(Map<String, dynamic> item) async {
     txtdesign.text = item['designation'] ?? '';
     txtdescription.text = item['descriptions'] ?? '';
@@ -27,13 +42,34 @@ class _AjouteformationState extends State<Ajouteformation> {
           content: SingleChildScrollView(
             child: Column(
               children: [
-                TextField(
-                  controller: txtdesign,
-                  decoration: const InputDecoration(labelText: 'designation'),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage:
+                        _imageFile != null ? FileImage(_imageFile!) : null,
+                    child: _imageFile == null
+                        ? const Icon(Icons.add_a_photo, size: 50)
+                        : null,
+                  ),
                 ),
                 TextField(
-                  controller: txtdescription,
-                  decoration: const InputDecoration(labelText: 'descriptions'),
+                  controller: txtdesign,
+                  decoration: const InputDecoration(labelText: 'Designation'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TextField(
+                    controller: txtdescription,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    decoration: const InputDecoration(
+                      hintText: 'Enter your description here',
+                      labelText: 'Description',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -48,7 +84,7 @@ class _AjouteformationState extends State<Ajouteformation> {
                   child: TextField(
                     controller: txtprixparti,
                     decoration: const InputDecoration(
-                        labelText: 'prix de participation'),
+                        labelText: 'Prix de participation'),
                   ),
                 ),
                 Padding(
@@ -117,18 +153,29 @@ class _AjouteformationState extends State<Ajouteformation> {
     final Date_debut = txtDate_debut.text;
     final Date_fin = txtDate_fin.text;
 
-    final response = await http.post(
+    var request = http.MultipartRequest(
+      'POST',
       Uri.parse("http://192.168.43.148:81/MRG/update.php"),
-      body: {
-        'id': id,
-        'designation': designation,
-        'descriptions': description,
-        'prix_inscription': prix_inscription,
-        'prix_participation': prix_participation,
-        'Date_debut': Date_debut,
-        'Date_Fin': Date_fin,
-      },
     );
+
+    request.fields['id'] = id;
+    request.fields['designation'] = designation;
+    request.fields['descriptions'] = description;
+    request.fields['prix_inscription'] = prix_inscription;
+    request.fields['prix_participation'] = prix_participation;
+    request.fields['Date_debut'] = Date_debut;
+    request.fields['Date_Fin'] = Date_fin;
+
+    if (_imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          _imageFile!.path,
+        ),
+      );
+    }
+
+    final response = await request.send();
 
     if (response.statusCode == 200) {
       txtdesign.clear();
@@ -184,17 +231,29 @@ class _AjouteformationState extends State<Ajouteformation> {
   TextEditingController txtDate_fin = TextEditingController();
 
   Future<void> insertData() async {
-    final response = await http.post(
+    var request = http.MultipartRequest(
+      'POST',
       Uri.parse("http://192.168.43.148:81/MRG/insertformation.php"),
-      body: {
-        'designation': txtdesign.text,
-        'descriptions': txtdescription.text,
-        'prix_inscription': txtprixinscription.text,
-        'prix_participation': txtprixparti.text,
-        'Date_debut': txtDate_debut.text,
-        'Date_Fin': txtDate_fin.text,
-      },
     );
+
+    request.fields['designation'] = txtdesign.text;
+    request.fields['descriptions'] = txtdescription.text;
+    request.fields['prix_inscription'] = txtprixinscription.text;
+    request.fields['prix_participation'] = txtprixparti.text;
+    request.fields['Date_debut'] = txtDate_debut.text;
+    request.fields['Date_Fin'] = txtDate_fin.text;
+
+    if (_imageFile != null) {
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'image',
+          _imageFile!.path,
+        ),
+      );
+    }
+
+    final response = await request.send();
+
     if (response.statusCode == 200) {
       txtdesign.clear();
       txtdescription.clear();
@@ -221,7 +280,7 @@ class _AjouteformationState extends State<Ajouteformation> {
   Future<void> fetchDesignationsAndDescriptions() async {
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.43.148:81/MRG/charger.php"),
+        Uri.parse("http://192.168.43.148:81/MRG/selectformation.php"),
       );
       setState(() {
         items = List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -236,24 +295,25 @@ class _AjouteformationState extends State<Ajouteformation> {
   }
 
   Future<void> deleteDataformation(BuildContext context, String id) async {
-    bool confirmDelete = await showDialog(
+    final confirmDelete = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmation'),
-          content: const Text('Voulez-vous vraiment supprimer ?'),
+          title: const Text('Confirmer la suppression'),
+          content:
+              const Text('Êtes-vous sûr de vouloir supprimer cet élément ?'),
           actions: <Widget>[
             TextButton(
+              child: const Text('Annuler'),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
-              child: const Text('Non'),
             ),
             TextButton(
+              child: const Text('Supprimer'),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: const Text('Oui'),
             ),
           ],
         );
@@ -261,35 +321,52 @@ class _AjouteformationState extends State<Ajouteformation> {
     );
 
     if (confirmDelete == true) {
-      var url = 'http://192.168.43.148:81/MRG/deleteformation.php?id=$id';
-      var response = await http.post(Uri.parse(url));
+      final response = await http.post(
+        Uri.parse("http://192.168.43.148:81/MRG/delete.php"),
+        body: {'id': id},
+      );
 
       if (response.statusCode == 200) {
-        print('Données supprimées avec succès');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Suppression réussie'),
+          ),
+        );
+        fetchDesignationsAndDescriptions();
       } else {
-        print(
-            'Échec de la suppression des données. Erreur: ${response.reasonPhrase}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors de la suppression'),
+          ),
+        );
       }
-    } else {
-      print('Suppression annulée');
     }
   }
 
-  Future<void> _showAddDialog() async {
+  Future<void> showInsertDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Ajouter formation'),
+          title: const Text('Ajouter Formation'),
           content: SingleChildScrollView(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextField(
-                    controller: txtdesign,
-                    decoration: const InputDecoration(labelText: 'Formation'),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[300],
+                    backgroundImage:
+                        _imageFile != null ? FileImage(_imageFile!) : null,
+                    child: _imageFile == null
+                        ? const Icon(Icons.add_a_photo, size: 30)
+                        : null,
                   ),
+                ),
+                TextField(
+                  controller: txtdesign,
+                  decoration: const InputDecoration(labelText: 'Designation'),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -317,7 +394,7 @@ class _AjouteformationState extends State<Ajouteformation> {
                   child: TextField(
                     controller: txtprixparti,
                     decoration: const InputDecoration(
-                        labelText: 'prix de participation'),
+                        labelText: 'Prix de participation'),
                   ),
                 ),
                 Padding(
@@ -367,19 +444,8 @@ class _AjouteformationState extends State<Ajouteformation> {
               child: const Text('Annuler'),
             ),
             TextButton(
-              onPressed: () {
-                if (txtdesign.text.isNotEmpty &&
-                    txtdescription.text.isNotEmpty) {
-                  insertData();
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Veuillez remplir tous les champs'),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Ajouter'),
+              onPressed: insertData,
+              child: const Text('Enregistrer'),
             ),
           ],
         );
@@ -391,111 +457,34 @@ class _AjouteformationState extends State<Ajouteformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('NOS FORMATIONS'),
+        title: const Text('Formations'),
       ),
-      body: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start, // Correction : alignement à gauche
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item['designation'] ?? 'N/A',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            item['descriptions'] ?? 'N/A',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Date Début: ${item['Date_debut'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Date Fin: ${item['Date_Fin'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    'Prix Inscription: ${item['prix_inscription'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Prix Participation: ${item['prix_participation'] ?? 'N/A'}',
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                iconSize: 15,
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  _showEditDialog(item);
-                                },
-                              ),
-                              IconButton(
-                                iconSize: 15,
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  deleteDataformation(context, item['id']);
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+      body: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          var item = items[index];
+          return ListTile(
+            title: Text(item['designation'] ?? 'N/A'),
+            subtitle: Text(item['descriptions'] ?? 'N/A'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () => _showEditDialog(item),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () =>
+                      deleteDataformation(context, item['id'].toString()),
+                ),
+              ],
             ),
-          ),
-        ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showAddDialog,
+        onPressed: () => showInsertDialog(context),
         child: const Icon(Icons.add),
       ),
     );

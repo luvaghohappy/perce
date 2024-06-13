@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:perceadmin/select.dart';
 
 class Myfirstpage extends StatefulWidget {
   const Myfirstpage({Key? key}) : super(key: key);
@@ -54,12 +55,28 @@ class _MyfirstpageState extends State<Myfirstpage> {
             const Padding(
               padding: EdgeInsets.only(top: 20),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text(
-                'Statistiques des activites',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
+            Row(
+              children: [
+                 const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                ),
+                const Text(
+                  'Statistiques des activites',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(left: 50),
+                ),
+                IconButton(
+                  color: Colors.blue,
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const InsertAdmin(),
+                    ));
+                  },
+                  icon: const Icon(Icons.person_2_outlined),
+                ),
+              ],
             ),
             const Padding(
               padding: EdgeInsets.only(top: 20),

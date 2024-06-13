@@ -42,6 +42,8 @@ dependencies:
   printing: 
   google_fonts: ^4.0.4
   font_awesome_flutter: ^10.4.0
+  connectivity_plus: ^3.0.4
+  mailer: ^6.0.1
 
 dev_dependencies:
   flutter_test:

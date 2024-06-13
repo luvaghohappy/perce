@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 10 juin 2024 à 18:50
+-- Généré le : jeu. 13 juin 2024 à 19:31
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.0.28
 
@@ -20,6 +20,26 @@ SET time_zone = "+00:00";
 --
 -- Base de données : `formation`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `administrateur`
+--
+
+CREATE TABLE `administrateur` (
+  `id` int(11) NOT NULL,
+  `email` varchar(200) NOT NULL,
+  `passwords` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `administrateur`
+--
+
+INSERT INTO `administrateur` (`id`, `email`, `passwords`) VALUES
+(2, 'perce@gmail.com', '1234'),
+(3, 'perce@gmail.com ', '123456');
 
 -- --------------------------------------------------------
 
@@ -56,56 +76,37 @@ CREATE TABLE `formations` (
   `prix_inscription` varchar(100) NOT NULL,
   `prix_participation` varchar(100) NOT NULL,
   `Date_debut` date NOT NULL,
-  `Date_Fin` date NOT NULL
+  `Date_Fin` date NOT NULL,
+  `image_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `formations`
---
-
-INSERT INTO `formations` (`id`, `designation`, `descriptions`, `prix_inscription`, `prix_participation`, `Date_debut`, `Date_Fin`) VALUES
-(1, 'Excel', 'logiciel de traitement de tableaux', '10 $', '50 $', '2024-06-10', '2024-06-20'),
-(2, 'Word', 'logiciel de saisi de texte', '5 $', '10 $', '2024-06-10', '2024-06-26');
 
 --
 -- Déclencheurs `formations`
 --
 DELIMITER $$
-CREATE TRIGGER `after_formations_delete` AFTER DELETE ON `formations` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_insert_formations` AFTER INSERT ON `formations` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'formations';
     
     IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count - 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'formations';
-    END IF;
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `after_formations_insert` AFTER INSERT ON `formations` FOR EACH ROW BEGIN
-    DECLARE table_exists INT;
-    SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'formations';
-    
-    IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count + 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'formations';
+        UPDATE states SET record_count = record_count + 1 WHERE table_names = 'formations';
     ELSE
         INSERT INTO states (table_names, record_count) VALUES ('formations', 1);
     END IF;
 END
 $$
 DELIMITER ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `months`
---
-
-CREATE TABLE `months` (
-  `id` int(11) NOT NULL,
-  `table_names` varchar(100) NOT NULL,
-  `record_count` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DELIMITER $$
+CREATE TRIGGER `before_delete_formations` BEFORE DELETE ON `formations` FOR EACH ROW BEGIN
+    DECLARE table_exists INT;
+    SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'formations';
+    
+    IF table_exists > 0 THEN
+        UPDATE states SET record_count = record_count - 1 WHERE table_names = 'formations';
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -125,32 +126,31 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `designation`, `descriptions`, `detaille`) VALUES
-(1, 'Coaching', 'formation personnelle', 'disponible'),
-(2, 'Soutien', 'formation personnelle', 'disponible');
+(1, 'Coaching', 'formation personnel', 'disponible ');
 
 --
 -- Déclencheurs `services`
 --
 DELIMITER $$
-CREATE TRIGGER `after_services_delete` AFTER DELETE ON `services` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_insert_services` AFTER INSERT ON `services` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'services';
     
     IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count - 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'services';
+        UPDATE states SET record_count = record_count + 1 WHERE table_names = 'services';
+    ELSE
+        INSERT INTO states (table_names, record_count) VALUES ('services', 1);
     END IF;
 END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_services_insert` AFTER INSERT ON `services` FOR EACH ROW BEGIN
+CREATE TRIGGER `before_delete_services` BEFORE DELETE ON `services` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'services';
     
     IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count + 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'services';
-    ELSE
-        INSERT INTO states (table_names, record_count) VALUES ('services', 1);
+        UPDATE states SET record_count = record_count - 1 WHERE table_names = 'services';
     END IF;
 END
 $$
@@ -164,43 +164,18 @@ DELIMITER ;
 
 CREATE TABLE `states` (
   `id` int(11) NOT NULL,
-  `table_names` varchar(250) DEFAULT NULL,
-  `record_count` int(11) DEFAULT NULL,
-  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `table_names` varchar(100) NOT NULL,
+  `record_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `states`
 --
 
-INSERT INTO `states` (`id`, `table_names`, `record_count`, `last_updated`) VALUES
-(1, 'user', 1, '2024-06-10 09:57:42'),
-(2, 'formations', 2, '2024-06-10 10:47:34'),
-(3, 'services', 2, '2024-06-10 12:05:57');
-
---
--- Déclencheurs `states`
---
-DELIMITER $$
-CREATE TRIGGER `end_of_month_trigger` AFTER INSERT ON `states` FOR EACH ROW BEGIN
-    DECLARE end_of_month DATE;
-    DECLARE table_name_value VARCHAR(250);
-    DECLARE record_count_value INT;
-
-    -- Récupération de la fin du mois
-    SET end_of_month = LAST_DAY(CURRENT_DATE);
-
-    -- Récupération des valeurs à insérer
-    SELECT table_names, record_count INTO table_name_value, record_count_value
-    FROM states
-    WHERE id = NEW.id;
-
-    -- Insertion dans la table month
-    INSERT INTO months (table_names, record_count, last_updated)
-    VALUES (table_name_value, record_count_value, end_of_month);
-END
-$$
-DELIMITER ;
+INSERT INTO `states` (`id`, `table_names`, `record_count`) VALUES
+(1, 'formations', 1),
+(2, 'services', 1),
+(3, 'user', 1);
 
 -- --------------------------------------------------------
 
@@ -230,31 +205,31 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `nom`, `postnom`, `prenom`, `sexe`, `org_privee`, `nom_organisation`, `Formation`, `paiement`, `Date_debut`, `Date_fin`, `Lieu`, `Telephone`, `Email`) VALUES
-(2, 'happy', 'luvagho', 'furaha', 'Feminin', 'Privée', '', 'Excel', 'Solde', '2024-06-10', '2024-06-20', 'MRG', '+243999582152', 'happy@gmail.com');
+(1, 'happy ', 'luvagho ', 'furaha ', 'Feminin', 'Privée', '', 'Word', 'Avance', '2024-06-11', '2024-06-27', 'MRG', '0999582152', 'happyluvagho@gmail.com');
 
 --
 -- Déclencheurs `user`
 --
 DELIMITER $$
-CREATE TRIGGER `after_users_delete` AFTER DELETE ON `user` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_insert_user` AFTER INSERT ON `user` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'user';
     
     IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count - 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'user';
+        UPDATE states SET record_count = record_count + 1 WHERE table_names = 'user';
+    ELSE
+        INSERT INTO states (table_names, record_count) VALUES ('user', 1);
     END IF;
 END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `after_users_insert` AFTER INSERT ON `user` FOR EACH ROW BEGIN
+CREATE TRIGGER `before_delete_user` BEFORE DELETE ON `user` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'user';
     
     IF table_exists > 0 THEN
-        UPDATE states SET record_count = record_count + 1, last_updated = CURRENT_TIMESTAMP WHERE table_names = 'user';
-    ELSE
-        INSERT INTO states (table_names, record_count) VALUES ('user', 1);
+        UPDATE states SET record_count = record_count - 1 WHERE table_names = 'user';
     END IF;
 END
 $$
@@ -263,6 +238,12 @@ DELIMITER ;
 --
 -- Index pour les tables déchargées
 --
+
+--
+-- Index pour la table `administrateur`
+--
+ALTER TABLE `administrateur`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Index pour la table `archive`
@@ -277,12 +258,6 @@ ALTER TABLE `formations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `months`
---
-ALTER TABLE `months`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Index pour la table `services`
 --
 ALTER TABLE `services`
@@ -292,8 +267,7 @@ ALTER TABLE `services`
 -- Index pour la table `states`
 --
 ALTER TABLE `states`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `table_names` (`table_names`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Index pour la table `user`
@@ -306,6 +280,12 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT pour la table `administrateur`
+--
+ALTER TABLE `administrateur`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT pour la table `archive`
 --
 ALTER TABLE `archive`
@@ -315,19 +295,13 @@ ALTER TABLE `archive`
 -- AUTO_INCREMENT pour la table `formations`
 --
 ALTER TABLE `formations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT pour la table `months`
---
-ALTER TABLE `months`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `states`
@@ -339,7 +313,7 @@ ALTER TABLE `states`
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 DELIMITER $$
 --

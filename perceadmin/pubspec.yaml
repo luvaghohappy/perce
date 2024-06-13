@@ -41,6 +41,8 @@ dependencies:
   printing: 
   charts_flutter:
   fl_chart: ^0.62.0
+  connectivity_plus: ^3.0.4
+  image_picker: ^0.8.7+5
 
 dev_dependencies:
   flutter_test:

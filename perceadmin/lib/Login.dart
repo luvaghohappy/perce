@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../foramationUsers.dart';
+import 'package:http/http.dart' as http;
 import 'navigation.dart';
 
 class Loginadmin extends StatefulWidget {
@@ -13,14 +14,26 @@ class _LoginadminState extends State<Loginadmin> {
   TextEditingController txtemail = TextEditingController();
   TextEditingController txtpassword = TextEditingController();
 
-  void login() {
+  Future<void> login() async {
     if (txtemail.text.isEmpty || txtpassword.text.isEmpty) {
       showErrorDialog("Veuillez remplir tous les champs.");
       return;
     }
 
-    if (txtemail.text == "perce@gmail.com" && txtpassword.text == "1234") {
-      // Navigate to Users page
+    final response = await http.post(
+      Uri.parse('http://192.168.43.148:81/MRG/selectadmin.php'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': txtemail.text,
+        'password': txtpassword.text,
+      }),
+    );
+
+    final responseData = jsonDecode(response.body);
+
+    if (responseData['status'] == 'success') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -28,7 +41,7 @@ class _LoginadminState extends State<Loginadmin> {
         ),
       );
     } else {
-      showErrorDialog("Email ou mot de passe incorrect.");
+      showErrorDialog(responseData['message']);
     }
   }
 
@@ -105,6 +118,7 @@ class _LoginadminState extends State<Loginadmin> {
                 padding: const EdgeInsets.all(20.0),
                 child: TextField(
                   controller: txtpassword,
+                  obscureText: true,
                   decoration: const InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.black12),

@@ -81,12 +81,15 @@ class _FormationsState extends State<Formations> {
                         Row(
                           children: [
                             CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Color.fromARGB(255, 11, 95, 163),
-                              child: Text(
-                                item['designation'][0].toUpperCase(),
-                                style: const TextStyle(color: Colors.white),
-                              ),
+                              radius: 30,
+                              backgroundColor: Colors.grey[300],
+                              backgroundImage: item['image'] != null
+                                  ? NetworkImage(item['image'])
+                                  : null,
+                              child: item['image'] == null
+                                  ? const Icon(Icons.image,
+                                      size: 30, color: Colors.grey)
+                                  : null,
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -115,55 +118,55 @@ class _FormationsState extends State<Formations> {
                         const SizedBox(height: 16),
                         Row(
                           children: [
+                            const Text("Prix d'inscription"),
                             const SizedBox(
                               width: 8,
                             ),
-                            Text(
-                              'Inscription: ${item['prix_inscription'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              'Participation: ${item['prix_participation'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                            CircleAvatar(
+                              radius: 13,
+                              backgroundColor: Colors.blue,
                               child: Text(
-                                'Du ${item['Date_debut'] ?? 'N/A'} au ${item['Date_Fin'] ?? 'N/A'}',
+                                item['prix_inscription'] ?? 'N/A',
                                 style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: Colors.white,
+                                  fontSize: 12,
                                 ),
-                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Text('Prix participation'),
+                            const SizedBox(width: 8),
+                            CircleAvatar(
+                              radius: 13,
+                              backgroundColor: Colors.blue,
+                              child: Text(
+                                item['prix_participation'] ?? 'N/A',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 8,
-                        )
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            'Du ${item['Date_debut'] ?? 'N/A'} au ${item['Date_Fin'] ?? 'N/A'}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),
