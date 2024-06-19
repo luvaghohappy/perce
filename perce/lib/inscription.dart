@@ -49,15 +49,15 @@ class _InscriptionState extends State<Inscription> {
   Future<void> sendEmail(String email, String nom, String postnom,
       String prenom, String formation, DateTime dateDebut) async {
     String username = 'perce.formation@gmail.com';
-    String password = 'your-email-password';
+    String password = 'PERCE2017';
 
     final smtpServer = gmail(username, password);
     final message = Message()
-      ..from = Address(username, 'Your Name')
+      ..from = Address(username, 'PERCE RD Congo')
       ..recipients.add(email)
       ..subject = 'Inscription réussie à une formation'
       ..text =
-          'Bonjour $prenom $nom $postnom,\n\nVous avez été inscrit à la formation $formation. '
+          'Bonjour $prenom $nom $postnom,\n\nVous avez été inscrit à la formation $formation.et'
               'Votre formation commence dans ${dateDebut.difference(DateTime.now()).inDays} jours.';
 
     try {

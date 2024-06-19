@@ -38,9 +38,17 @@ class _DetailleState extends State<Detaille> {
                       padding: const EdgeInsets.only(left: 10),
                       child: Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 25,
-                            backgroundImage: AssetImage('assets/perce.png'),
+                          CircleAvatar(
+                            radius: 15,
+                            backgroundColor: Colors.blue,
+                            backgroundImage: item['image_path'] != null
+                                ? NetworkImage(
+                                    "http://192.168.43.148:81/MRG/${item['image_path']}")
+                                : null,
+                            child: item['image_path'] == null
+                                ? const Icon(Icons.image,
+                                    size: 10, color: Colors.grey)
+                                : null,
                           ),
                           const Padding(
                             padding: EdgeInsets.only(left: 20),

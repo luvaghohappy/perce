@@ -235,8 +235,8 @@ class _ServicesState extends State<Services> {
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: const InputDecoration(
-                      hintText: 'Detaille',
-                      labelText: 'Detaille',
+                      hintText: 'Etat',
+                      labelText: 'Etat',
                       border: OutlineInputBorder(),
                     ),
                   ),

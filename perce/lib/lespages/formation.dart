@@ -81,14 +81,15 @@ class _FormationsState extends State<Formations> {
                         Row(
                           children: [
                             CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.grey[300],
-                              backgroundImage: item['image'] != null
-                                  ? NetworkImage(item['image'])
+                              radius: 15,
+                              backgroundColor: Colors.blue,
+                              backgroundImage: item['image_path'] != null
+                                  ? NetworkImage(
+                                      "http://192.168.43.148:81/MRG/${item['image_path']}")
                                   : null,
-                              child: item['image'] == null
+                              child: item['image_path'] == null
                                   ? const Icon(Icons.image,
-                                      size: 30, color: Colors.grey)
+                                      size: 10, color: Colors.grey)
                                   : null,
                             ),
                             const SizedBox(width: 16),
@@ -119,17 +120,17 @@ class _FormationsState extends State<Formations> {
                         Row(
                           children: [
                             const Text("Prix d'inscription"),
-                            const SizedBox(
-                              width: 8,
-                            ),
+                            const SizedBox(width: 8),
                             CircleAvatar(
                               radius: 13,
                               backgroundColor: Colors.blue,
-                              child: Text(
-                                item['prix_inscription'] ?? 'N/A',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
+                              child: Center(
+                                child: Text(
+                                  item['prix_inscription'] ?? 'N/A',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             ),
@@ -139,11 +140,13 @@ class _FormationsState extends State<Formations> {
                             CircleAvatar(
                               radius: 13,
                               backgroundColor: Colors.blue,
-                              child: Text(
-                                item['prix_participation'] ?? 'N/A',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
+                              child: Center(
+                                child: Text(
+                                  item['prix_participation'] ?? 'N/A',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
                                 ),
                               ),
                             ),
@@ -194,7 +197,10 @@ class _FormationsState extends State<Formations> {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Center(
-                    child: Text("S'inscrire", style: TextStyle(fontSize: 16)),
+                    child: Text(
+                      "S'inscrire",
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 ),
               ],

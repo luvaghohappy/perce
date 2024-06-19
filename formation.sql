@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 13 juin 2024 à 19:31
+-- Généré le : mer. 19 juin 2024 à 17:27
 -- Version du serveur : 10.4.28-MariaDB
 -- Version de PHP : 8.0.28
 
@@ -77,8 +77,15 @@ CREATE TABLE `formations` (
   `prix_participation` varchar(100) NOT NULL,
   `Date_debut` date NOT NULL,
   `Date_Fin` date NOT NULL,
-  `image_path` varchar(255) DEFAULT NULL
+  `image_path` varchar(1000) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `formations`
+--
+
+INSERT INTO `formations` (`id`, `designation`, `descriptions`, `prix_inscription`, `prix_participation`, `Date_debut`, `Date_Fin`, `image_path`) VALUES
+(2, 'Ecxel ', 'logiciel ', '10 $', '30 $', '2024-06-17', '2024-06-27', 'uploads/20240613_170143.jpg');
 
 --
 -- Déclencheurs `formations`
@@ -97,7 +104,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `before_delete_formations` BEFORE DELETE ON `formations` FOR EACH ROW BEGIN
+CREATE TRIGGER `before_delete_formations` AFTER DELETE ON `formations` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'formations';
     
@@ -126,7 +133,7 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `designation`, `descriptions`, `detaille`) VALUES
-(1, 'Coaching', 'formation personnel', 'disponible ');
+(2, 'coaching ', 'formation personnelle', 'disponible ');
 
 --
 -- Déclencheurs `services`
@@ -145,7 +152,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `before_delete_services` BEFORE DELETE ON `services` FOR EACH ROW BEGIN
+CREATE TRIGGER `before_delete_services` AFTER DELETE ON `services` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'services';
     
@@ -173,9 +180,9 @@ CREATE TABLE `states` (
 --
 
 INSERT INTO `states` (`id`, `table_names`, `record_count`) VALUES
-(1, 'formations', 1),
 (2, 'services', 1),
-(3, 'user', 1);
+(3, 'user', 1),
+(4, 'formations', 1);
 
 -- --------------------------------------------------------
 
@@ -205,7 +212,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `nom`, `postnom`, `prenom`, `sexe`, `org_privee`, `nom_organisation`, `Formation`, `paiement`, `Date_debut`, `Date_fin`, `Lieu`, `Telephone`, `Email`) VALUES
-(1, 'happy ', 'luvagho ', 'furaha ', 'Feminin', 'Privée', '', 'Word', 'Avance', '2024-06-11', '2024-06-27', 'MRG', '0999582152', 'happyluvagho@gmail.com');
+(2, 'happy ', 'luvagho ', 'furaha ', 'Feminin', 'Privée', '', 'Ecxel ', 'Solde', '2024-06-17', '2024-06-18', 'Mrg', '0999582152', 'happyluvagho@gmail.com23');
 
 --
 -- Déclencheurs `user`
@@ -224,7 +231,7 @@ END
 $$
 DELIMITER ;
 DELIMITER $$
-CREATE TRIGGER `before_delete_user` BEFORE DELETE ON `user` FOR EACH ROW BEGIN
+CREATE TRIGGER `before_delete_user` AFTER DELETE ON `user` FOR EACH ROW BEGIN
     DECLARE table_exists INT;
     SELECT COUNT(*) INTO table_exists FROM states WHERE table_names = 'user';
     
@@ -295,25 +302,25 @@ ALTER TABLE `archive`
 -- AUTO_INCREMENT pour la table `formations`
 --
 ALTER TABLE `formations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `states`
 --
 ALTER TABLE `states`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 DELIMITER $$
 --

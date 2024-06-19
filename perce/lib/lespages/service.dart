@@ -45,7 +45,7 @@ class _ServicesState extends State<Services> {
             const SizedBox(height: 20),
             const Text(
               'NOS SERVICES DISPONIBLES',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Expanded(

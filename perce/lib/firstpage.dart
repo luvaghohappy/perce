@@ -27,8 +27,8 @@ class _MyfirstpageState extends State<Myfirstpage> {
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(25),
+                  bottomRight: Radius.circular(25),
                 ),
               ),
               child: Stack(

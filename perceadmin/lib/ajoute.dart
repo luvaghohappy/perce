@@ -14,16 +14,18 @@ class Ajouteformation extends StatefulWidget {
 
 class _AjouteformationState extends State<Ajouteformation> {
   File? _imageFile;
+  final picker = ImagePicker();
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      setState(() {
+    setState(() {
+      if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
-      });
-    }
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   Future<void> _showEditDialog(Map<String, dynamic> item) async {
@@ -43,15 +45,12 @@ class _AjouteformationState extends State<Ajouteformation> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: _pickImage,
+                  onTap: getImage,
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.grey[300],
                     backgroundImage:
                         _imageFile != null ? FileImage(_imageFile!) : null,
-                    child: _imageFile == null
-                        ? const Icon(Icons.add_a_photo, size: 50)
-                        : null,
+                    child: _imageFile == null ? const Icon(Icons.person) : null,
                   ),
                 ),
                 TextField(
@@ -190,7 +189,7 @@ class _AjouteformationState extends State<Ajouteformation> {
           content: Text('Mise à jour réussie'),
         ),
       );
-      fetchDesignationsAndDescriptions();
+      fetch();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -205,7 +204,7 @@ class _AjouteformationState extends State<Ajouteformation> {
   @override
   void initState() {
     super.initState();
-    fetchDesignationsAndDescriptions();
+    fetch();
   }
 
   Future<void> _selectDate(TextEditingController controller) async {
@@ -255,19 +254,32 @@ class _AjouteformationState extends State<Ajouteformation> {
     final response = await request.send();
 
     if (response.statusCode == 200) {
-      txtdesign.clear();
-      txtdescription.clear();
-      txtprixinscription.clear();
-      txtprixparti.clear();
-      txtDate_debut.clear();
-      txtDate_fin.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Enregistrement réussi'),
-        ),
-      );
-      fetchDesignationsAndDescriptions();
-      Navigator.of(context).pop(true);
+      final responseBody = await response.stream.bytesToString();
+      final responseJson = jsonDecode(responseBody);
+
+      if (responseJson['status'] == 'success') {
+        txtdesign.clear();
+        txtdescription.clear();
+        txtprixinscription.clear();
+        txtprixparti.clear();
+        txtDate_debut.clear();
+        txtDate_fin.clear();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Enregistrement réussi'),
+          ),
+        );
+        fetch();
+        Navigator.of(context).pop(true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Erreur lors de l\'enregistrement: ${responseJson['error']}'),
+          ),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -277,10 +289,10 @@ class _AjouteformationState extends State<Ajouteformation> {
     }
   }
 
-  Future<void> fetchDesignationsAndDescriptions() async {
+  Future<void> fetch() async {
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.43.148:81/MRG/selectformation.php"),
+        Uri.parse("http://192.168.43.148:81/MRG/charger.php"),
       );
       setState(() {
         items = List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -294,53 +306,62 @@ class _AjouteformationState extends State<Ajouteformation> {
     }
   }
 
-  Future<void> deleteDataformation(BuildContext context, String id) async {
-    final confirmDelete = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmer la suppression'),
-          content:
-              const Text('Êtes-vous sûr de vouloir supprimer cet élément ?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Annuler'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: const Text('Supprimer'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
+  Future<void> deleteFormation(String id) async {
+    final response = await http.post(
+      Uri.parse("http://192.168.43.148:81/MRG/deleteformation.php"),
+      body: {'id': id},
     );
 
-    if (confirmDelete == true) {
-      final response = await http.post(
-        Uri.parse("http://192.168.43.148:81/MRG/delete.php"),
-        body: {'id': id},
-      );
-
-      if (response.statusCode == 200) {
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body);
+      if (result['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Suppression réussie'),
           ),
         );
-        fetchDesignationsAndDescriptions();
+        fetch();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Erreur lors de la suppression'),
+          SnackBar(
+            content: Text('Erreur lors de la suppression : ${result['error']}'),
           ),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erreur lors de la suppression'),
+        ),
+      );
     }
+  }
+
+  void _confirmDelete(String id) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirmation de suppression'),
+          content: const Text('Voulez-vous vraiment supprimer cet élément ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Annuler'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                deleteFormation(id);
+              },
+              child: const Text('Supprimer'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> showInsertDialog(BuildContext context) async {
@@ -353,15 +374,12 @@ class _AjouteformationState extends State<Ajouteformation> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: _pickImage,
+                  onTap: getImage,
                   child: CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.grey[300],
                     backgroundImage:
                         _imageFile != null ? FileImage(_imageFile!) : null,
-                    child: _imageFile == null
-                        ? const Icon(Icons.add_a_photo, size: 30)
-                        : null,
+                    child: _imageFile == null ? const Icon(Icons.person) : null,
                   ),
                 ),
                 TextField(
@@ -459,29 +477,143 @@ class _AjouteformationState extends State<Ajouteformation> {
       appBar: AppBar(
         title: const Text('Formations'),
       ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          var item = items[index];
-          return ListTile(
-            title: Text(item['designation'] ?? 'N/A'),
-            subtitle: Text(item['descriptions'] ?? 'N/A'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => _showEditDialog(item),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () =>
-                      deleteDataformation(context, item['id'].toString()),
-                ),
-              ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 15,
+                                backgroundColor: Colors.blue,
+                                backgroundImage: item['image_path'] != null
+                                    ? NetworkImage(
+                                        "http://192.168.43.148:81/MRG/${item['image_path']}")
+                                    : null,
+                                child: item['image_path'] == null
+                                    ? const Icon(Icons.image,
+                                        size: 10, color: Colors.grey)
+                                    : null,
+                              ),
+                              const SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                item['designation'] ?? 'N/A',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            item['descriptions'] ?? 'N/A',
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Prix Inscription: ',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${item['prix_inscription']}',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Prix Participation: ',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${item['prix_participation']}',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        'Dates: ',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${item['Date_debut']} jusqu\'à ${item['Date_Fin']}',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                iconSize: 15,
+                                icon: const Icon(Icons.edit),
+                                onPressed: () {
+                                  _showEditDialog(item);
+                                },
+                              ),
+                              IconButton(
+                                iconSize: 15,
+                                icon: const Icon(Icons.delete),
+                                onPressed: () {
+                                  deleteFormation(item['id']);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          );
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showInsertDialog(context),
